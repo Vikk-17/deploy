@@ -29,3 +29,16 @@ jobs:
       - name: Verify Pushed Image
         run: docker pull hipster0x/deploy:latest
 
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            sudo docker pull hipster0x/deploy:latest 
+            sudo docker stop deploy_test || true
+            sudo docker rm deploy_test || true
+            sudo docker run -d --name deploy_test -p 3005:3000 hipster0x/deploy:latest
+
+
